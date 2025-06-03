@@ -7,6 +7,7 @@ function Navbar() {
         <Link to="/">Login</Link>
         <Link to="/register">Register</Link>
         <Link to="/input">Input</Link>
+        <Link to="/match">Match</Link>
       </div>
     </nav>
   );
