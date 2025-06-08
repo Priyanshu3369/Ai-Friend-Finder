@@ -1,9 +1,12 @@
-from extensions import db
-from datetime import datetime
+from sqlmodel import SQLModel, Field
+from typing import Optional
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    email: str
+    password: str
+
+    # 👇 Add these new fields for NLP results
+    mbti_summary: Optional[str] = None
+    emotion_label: Optional[str] = None
