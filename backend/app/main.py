@@ -4,6 +4,7 @@ from config import Config
 from extensions import db, jwt, bcrypt
 from routes.auth_routes import auth_bp
 from flask_sqlalchemy import SQLAlchemy
+from app.routes.nlp_routes import nlp_bp
 
 def create_app():
     app = Flask(__name__)
@@ -15,6 +16,7 @@ def create_app():
     bcrypt.init_app(app)
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(nlp_bp)
 
     @app.route("/")
     def home():
