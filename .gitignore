@@ -1,0 +1,39 @@
+# -------------------
+# Node / Frontend (React + Vite)
+# -------------------
+node_modules/
+dist/
+.env
+*.env.local
+*.env.development
+*.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
+
+# -------------------
+# Python / Backend (FastAPI)
+# -------------------
+venv/
+__pycache__/
+*.py[cod]
+*.pyc
+*.log
+*.db
+instance/
+.env
+*.sqlite3
+
+# -------------------
+# OS/System Files
+# -------------------
+.DS_Store
+Thumbs.db
+
+# -------------------
+# Editor Configs
+# -------------------
+.vscode/
+.idea/
