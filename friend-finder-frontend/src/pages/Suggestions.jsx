@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Suggestions() {
   const [suggestions, setSuggestions] = useState([]);
+  const [sentRequests, setSentRequests] = useState({}); // track requests
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -15,12 +16,29 @@ export default function Suggestions() {
         });
         setSuggestions(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching suggestions:", err);
       }
     };
 
     fetchSuggestions();
   }, []);
+
+  const sendFriendRequest = async (receiverEmail) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post("http://localhost:8000/api/v1/send-request", {
+        receiver_email: receiverEmail,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setSentRequests(prev => ({ ...prev, [receiverEmail]: true }));
+      alert("Friend request sent!");
+    } catch (err) {
+      console.error("Error sending request:", err);
+      alert(err?.response?.data?.detail || "Failed to send friend request.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-slate-900 text-white px-4 py-10">
@@ -34,7 +52,13 @@ export default function Suggestions() {
             <CardContent>
               <p className="text-sm">Interests: {user.interests}</p>
               <p className="text-sm mb-2">Match Score: {user.similarity}</p>
-              <Button className="w-full">Send Friend Request</Button>
+              <Button
+                className="w-full"
+                onClick={() => sendFriendRequest(user.email)}
+                disabled={sentRequests[user.email]}
+              >
+                {sentRequests[user.email] ? "Request Sent" : "Send Friend Request"}
+              </Button>
             </CardContent>
           </Card>
         ))}
