@@ -14,31 +14,37 @@ export default function Suggestions() {
         const res = await axios.get("http://localhost:8000/api/v1/suggestions", {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log("Suggestions received:", res.data);  // 👈 check this
         setSuggestions(res.data);
       } catch (err) {
-        console.error("Error fetching suggestions:", err);
+        console.error(err);
       }
     };
-
     fetchSuggestions();
   }, []);
+
 
   const sendFriendRequest = async (receiverEmail) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/api/v1/send-request", {
-        receiver_email: receiverEmail,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      setSentRequests(prev => ({ ...prev, [receiverEmail]: true }));
-      alert("Friend request sent!");
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/send-request",
+        { receiver_email: receiverEmail },  // ✅ must match Pydantic model
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      console.log("Friend request sent:", res.data);
     } catch (err) {
-      console.error("Error sending request:", err);
-      alert(err?.response?.data?.detail || "Failed to send friend request.");
+      console.error("Error sending request:", err.response?.data || err.message);
+      alert(err.response?.data?.detail || "Friend request failed.");
     }
   };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-slate-900 text-white px-4 py-10">
@@ -52,13 +58,10 @@ export default function Suggestions() {
             <CardContent>
               <p className="text-sm">Interests: {user.interests}</p>
               <p className="text-sm mb-2">Match Score: {user.similarity}</p>
-              <Button
-                className="w-full"
-                onClick={() => sendFriendRequest(user.email)}
-                disabled={sentRequests[user.email]}
-              >
-                {sentRequests[user.email] ? "Request Sent" : "Send Friend Request"}
+              <Button className="w-full" onClick={() => sendFriendRequest(user.email)}>
+                Send Friend Request
               </Button>
+
             </CardContent>
           </Card>
         ))}

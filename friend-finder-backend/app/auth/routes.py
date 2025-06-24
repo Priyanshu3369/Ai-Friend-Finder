@@ -4,6 +4,8 @@ from app.models.user import UserCreate, UserLogin, UserOut
 from app.auth.auth_utils import hash_password, verify_password
 from app.auth.jwt_handler import create_access_token
 from bson import ObjectId
+from fastapi import Depends, Query
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 

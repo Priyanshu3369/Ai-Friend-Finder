@@ -1,12 +1,23 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import Login from "./pages/Login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
+// import Dashboard from "./pages/Dashboard";
+import Suggestions from "./pages/Suggestions";
+import FriendRequests from "./pages/FriendRequests";
+import Chat from "./pages/Chat";
+
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <Register></Register>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/suggestions" element={<Suggestions />} />
+        <Route path="/requests" element={<FriendRequests />} />
+        <Route path="/chat" element={<Chat userEmail="a@example.com" friendEmail="b@example.com" />} />
+      </Routes>
+    </Router>
   );
 }
 
