@@ -85,3 +85,51 @@ def get_friends():
 
     friends = mongo.db.users.find({"_id": {"$in": [ObjectId(fid) for fid in friend_ids]}})
     return jsonify([{"_id": str(f["_id"]), "email": f["email"]} for f in friends]), 200
+
+
+
+@user_bp.route('/match-scores', methods=['GET'])
+@jwt_required()
+def get_match_scores():
+    user_id = get_jwt_identity()
+    current_user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+    if not current_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    users = mongo.db.users.find({'_id': {'$ne': ObjectId(user_id)}})
+    results = []
+
+    def calculate_score(u1, u2):
+        score = 0
+
+        # Mood match
+        if u1.get('mood') and u2.get('mood') and u1['mood'] == u2['mood']:
+            score += 30
+
+        # Personality match
+        if u1.get('personality') and u2.get('personality') and u1['personality'] == u2['personality']:
+            score += 30
+
+        # Shared interests
+        interests1 = set(map(str.strip, u1.get('interests', '').lower().split(',')))
+        interests2 = set(map(str.strip, u2.get('interests', '').lower().split(',')))
+        shared = interests1.intersection(interests2)
+        if shared:
+            score += min(40, len(shared) * 10)
+
+        return min(score, 100)
+
+    for user in users:
+        score = calculate_score(current_user, user)
+        results.append({
+            'user': {
+                '_id': str(user['_id']),
+                'email': user['email'],
+                'mood': user.get('mood', ''),
+                'personality': user.get('personality', ''),
+                'interests': user.get('interests', '')
+            },
+            'match_score': score
+        })
+
+    return jsonify(results)

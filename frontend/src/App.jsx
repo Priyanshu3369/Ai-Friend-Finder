@@ -1,32 +1,48 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
 import Users from './pages/Users'
 import Friends from './pages/Friends'
-import Navbar from './components/Navbar'
-import ProtectedRoute from './components/ProtectedRoute'
+import Chat from './pages/Chat'
 
-function App() {
+import Navbar from './components/Navbar'
+
+export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    setIsAuthenticated(!!token)
+  }, [])
+
   return (
     <>
-      <Navbar />
+      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/friends" element={<Friends />} />
-        </Route>
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/profile" /> : <Login setIsAuthenticated={setIsAuthenticated} />}
+        />
+        <Route
+          path="/register"
+          element={isAuthenticated ? <Navigate to="/profile" /> : <Register />}
+        />
 
+        {/* Protected Routes */}
+        <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/users" element={isAuthenticated ? <Users /> : <Navigate to="/login" />} />
+        <Route path="/friends" element={isAuthenticated ? <Friends /> : <Navigate to="/login" />} />
+        <Route path="/chat/:friendId" element={isAuthenticated ? <Chat /> : <Navigate to="/login" />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   )
 }
-
-export default App

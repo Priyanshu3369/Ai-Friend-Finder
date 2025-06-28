@@ -1,29 +1,29 @@
 import { Link, useNavigate } from 'react-router-dom'
 
-export default function Navbar() {
-  const token = localStorage.getItem('token')
+export default function Navbar({ isAuthenticated, setIsAuthenticated }) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    navigate('/')
+    localStorage.removeItem('user_id')
+    setIsAuthenticated(false)
+    navigate('/login')
   }
 
   return (
-    <nav className="p-4 bg-blue-600 text-white flex justify-between">
-      <Link to="/" className="font-bold text-lg">FriendFinder</Link>
-      <div>
-        {token ? (
+    <nav className="bg-gray-800 text-white px-6 py-3 flex justify-between items-center">
+      <Link to="/" className="text-xl font-bold">AI Friend Finder</Link>
+      <div className="space-x-4">
+        {isAuthenticated ? (
           <>
-            <Link to="/dashboard" className="mr-4">Dashboard</Link>
-            <Link to="/profile" className="mr-4">Profile</Link>
-            <Link to="/users" className="mr-4">Find Friends</Link>
-            <Link to="/friends" className="mr-4">Friends</Link>
-            <button onClick={handleLogout}>Logout</button>
+            <Link to="/profile">Profile</Link>
+            <Link to="/users">Users</Link>
+            <Link to="/friends">Friends</Link>
+            <button onClick={handleLogout} className="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login" className="mr-4">Login</Link>
+            <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
         )}
