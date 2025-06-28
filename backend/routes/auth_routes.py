@@ -8,8 +8,10 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    users = mongo.db.users
+    if not data or not data.get('email') or not data.get('password'):
+        return jsonify({'error': 'Email and password required'}), 400
 
+    users = mongo.db.users
     if users.find_one({'email': data['email']}):
         return jsonify({'error': 'Email already exists'}), 400
 
@@ -19,6 +21,7 @@ def register():
         'password': hashed_password
     })
     return jsonify({'message': 'User registered'}), 201
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

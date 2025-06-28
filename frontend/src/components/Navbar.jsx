@@ -16,6 +16,9 @@ export default function Navbar() {
         {token ? (
           <>
             <Link to="/dashboard" className="mr-4">Dashboard</Link>
+            <Link to="/profile" className="mr-4">Profile</Link>
+            <Link to="/users" className="mr-4">Find Friends</Link>
+            <Link to="/friends" className="mr-4">Friends</Link>
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
